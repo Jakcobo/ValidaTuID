@@ -1,0 +1,141 @@
+services:
+  balanceadorw:
+    image: proyectofinal-balanceadorw
+    build: 
+      context: ./haproxyw
+      dockerfile: Dockerfile
+    links:
+      - portal
+    ports:
+      - "5080:80"
+    #deploy:
+    #  replicas: 1
+    #  placement:
+    #    constraints:
+    #      - node.labels.role == loadbalancer
+
+  balanceadors1:
+    image: proyectofinal-balanceadors1
+    build: 
+      context: ./haproxys1
+      dockerfile: Dockerfile
+    links:
+      - microclientes
+      - micropeticiones
+    ports:
+      - "5081:3001"
+      - "5083:3003"
+    #deploy:
+    #  replicas: 1
+    #  placement:
+    #    constraints:
+    #      - node.labels.role == loadbalancer
+
+  balanceadors2:
+    image: proyectofinal-balanceadors2
+    build: 
+      context: ./haproxys2
+      dockerfile: Dockerfile
+    links:
+      - microusuarios
+    ports:
+      - "5082:3002"
+    #deploy:
+    #  replicas: 1
+    #  placement:
+    #    constraints:
+    #      - node.labels.role == loadbalancer
+
+  portal:
+    image: proyectofinal-portal
+    build: 
+      context: ./portal
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    links:
+      - balanceadors1
+      - balanceadors2
+    #deploy:
+    #  replicas: 1
+    #  placement:
+    #    constraints:
+    #      - node.labels.role == serverportal
+  
+  microclientes:
+    image: proyectofinal-microclientes
+    build: 
+      context: ./servicios/clientes
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    links:
+      - peticionesdb
+    #deploy:
+    #  replicas: 1
+    #  placement:
+    #    constraints:
+    #      - node.labels.role == serverservices
+
+  micropeticiones:
+    image: proyectofinal-micropeticiones
+    build: 
+      context: ./servicios/peticiones
+      dockerfile: Dockerfile
+    links:
+      - peticionesdb
+      - balanceadors2
+    ports:
+      - "3003:3003"
+    #deploy:
+    #  replicas: 1
+    #  placement:
+    #    constraints:
+    #      - node.labels.role == serverservices
+
+  microusuarios:
+    image: proyectofinal-microusuarios
+    build: 
+      context: ./servicios/usuarios
+      dockerfile: Dockerfile
+    links:
+      - peticionesdb
+    ports:
+      - "3002:3002"
+    #deploy:
+    #  replicas: 1
+    #  placement:
+    #    constraints:
+    #      - node.labels.role == serverservices
+
+  peticionesdb:
+    #image: mysql:latest
+    image: proyectofinal-peticionesdb
+    build: 
+      context: ./peticionesdb/
+      dockerfile: Dockerfilemysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: "user"
+      MYSQL_PASSWORD: "root"
+    ports:
+      - "32000:3306"
+    volumes:
+      - peticionesdb:/var/lib/mysql
+      - ./peticionesdb/init.sql:/docker-entrypoint-initdb.d/init.sql
+    # deploy:
+    #  placement:
+    #    constraints:
+    #      - node.labels.role == serverstorage
+  
+  insertadditionaldata:
+    image: proyectofinal-insertadditionaldata
+    build: 
+      context: ./peticionesdb/
+      dockerfile: Dockerfile
+    links:
+      - peticionesdb
+
+volumes:
+  peticionesdb:
