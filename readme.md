@@ -4,26 +4,26 @@
 
 El sistema sirve para asd askdjasl djkalsdjlaskdlasd
 
-##### Roles de los Usuarios
+##### Roles del sistema
 Rol | Descripción
 ------------ | ------------
-Administrador | ????
-Validador | ???????
-Cliente |  ????
+Administrador | Rol de usurario quien puede crear usuarios y visualizar todas las peticiones
+Validador | Rol de usuarios con la opcion de realizar el cambio de las solicitudes de pendiente a Aprobado o Rechazado
+Cliente |  Solicitante del servicio
 
-##### Tipos de Solicitud
-Solicitud | Descripción
------------- | ------------
-?? | ????
-?? | ???????
-?? |  ????
+##### Tipos de Solicitud 
+
+- CDT 
+- Cuenta Ahorros 
+- Credito
+ 
 
 ##### Estados de la Solicitud
 Estado | Descripción
 ------------ | ------------
-?? | ????
-?? | ???????
-?? |  ????
+Aprobado | Una vez el validador determina que el proceso cumple con los lineamientos para ser aprobado
+Rechazado | El proceso no cumple con lo requerimientos
+Pendiente |  Estado predeterminado al crear una solicitud
 
 
 ## Arquitectura
@@ -85,8 +85,8 @@ password | Contraseña del usuario
 ##### Tabla Clientes
 Campo | Descripción
 ------------ | ------------
-cc | ???
-password | ????
+cc | numero de documento 
+password | Clave de acceso al portal
 
 ##### Tabla Peticiones
 Campo | Descripción
@@ -101,10 +101,10 @@ horasolicitud | hora en la que se registro la solicitud
 usuariovalidador | Usuario que valido la solicitud
 nombrevalidador | Nombre del usuario que valido la solicitud
 estado | Estado de la solicitud
-fechacreacion | Fecha
-horacreacion | ????
-fecharevision | ????
-horarevision | ????
+fechacreacion | Fecha en que se creo la peticion
+horacreacion | Hora en que se creo la peticion
+fecharevision | Fecha en que el validador reviso la peticion
+horarevision | Hora en que el validador reviso la peticion
 
 ### Servicio de carga de información
 
@@ -181,23 +181,21 @@ El archivo de Docker compose tiene la configuración para desplegar los contened
 
 Capa | Servicio | Role | Maquina
 ------------ | ------------ | ------------- | -------------
-Presentación | Portal | serverportal | clienteUbuntu
-Servicios | micropeticiones | serverservices | servidorUbuntu
-Servicios | microclientes | serverservices | servidorUbuntu
-Servicios | microusuarios | serverservices | servidorUbuntu
-Base de Datos | Peticionesdb | serverstorage | servidorUbuntu
-Balanceador | Balanceadorw | loadbalancer | servidorUbuntu
-Balanceador | Balanceadors1 | loadbalancer | servidorUbuntu
-Balanceador | Balanceadors2 | loadbalancer | servidorUbuntu
+Presentación | Portal | cliente | clienteUbuntu
+Servicios | micropeticiones | servidor | servidorUbuntu
+Servicios | microclientes | servidor | servidorUbuntu
+Servicios | microusuarios | servidor | servidorUbuntu
+Base de Datos | Peticionesdb | servidor | servidorUbuntu
+Balanceador | Balanceadorw | cliente | clienteUbuntu
+Balanceador | Balanceadors1 | cliente | clienteUbuntu
+Balanceador | Balanceadors2 | cliente | clienteUbuntu
 
 Para la configuración anterior, ejecute los siguientes comandos.
 
-Ejecute los siguientes comandos en ?????????
+Ejecute los siguientes comandos en el cluster Manager
 ```sh
-docker node update --label-add role=loadbalancer servidorUbuntu
-docker node update --label-add role=serverportal clienteUbuntu
-docker node update --label-add role=serverservices servidorUbuntu
-docker node update --label-add role=serverstorage servidorUbuntu
+docker node update --label-add role=servidor servidorUbuntu
+docker node update --label-add role=cliente clienteUbuntu
 ```
 
 ### Cree el cluster con Docker Swarn
@@ -258,7 +256,7 @@ El archivo de Jmeter **Pruebas de Carga.jmx** tiene un ejemplo configurado con l
 Ejecute el siguiente comando en el servidorUbuntu para escalar el servicio y lograr que no se obtengan fallos al realizar la prueba de carga.
 
 ```sh
-# Escale un servicio
+# Ejemplo para escalar un servicio
 docker service scale proyectofinal_microusuarios=2 
 ```
 
