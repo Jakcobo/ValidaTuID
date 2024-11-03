@@ -142,6 +142,23 @@ end
 
 Instale Docker tanto en el servidorUbuntu como en el clienteUbuntu
 
+### Descargar el repositorio y construya las imágenes Docker
+
+Ingrese al servidorUbuntu y descargue el repositorio git
+
+```sh
+git clone https://github.com/jacoboDM/ValidaTuID
+
+# Ingrese a la carpeta
+cd ValidaTuID
+
+# Construya las imágenes Docker
+docker compose build
+
+# Verifique que las imágenes fueron construidas. Recuerde que inician por proyectofinal-
+docker images -a
+```
+
 ### Cofiguración de roles de despliegue
 
 El archivo de Docker compose tiene la configuración para desplegar los contenedores en determinados roles.
@@ -187,6 +204,24 @@ docker service ls
 
 # Consultar los contenedores en el servicio especificado
 docker service ps proyectofinal_microusuarios
+```
+
+Consulte el id del contenedor de la base de datos ingrese a ella y realice una consulta;
+
+```sh
+# Consultar el id del servicio debe iniciar por "proyectofinal-peticionesdb"
+docker ps
+
+# Ingrese al contenedor
+docker exec -it 168d22990ac1 /bin/bash
+
+# Ingrese a la base de datos y realice una consulta para verificar que se insertaron los registros
+
+mysql -u root -p
+use peticiones;
+select * from usuarios;
+select * from clientes;
+
 ```
 
 ### Pruebas de desempeño

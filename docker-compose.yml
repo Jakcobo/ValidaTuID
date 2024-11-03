@@ -8,11 +8,11 @@ services:
       - portal
     ports:
       - "5080:80"
-    #deploy:
-    #  replicas: 1
-    #  placement:
-    #    constraints:
-    #      - node.labels.role == loadbalancer
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.role == loadbalancer
 
   balanceadors1:
     image: proyectofinal-balanceadors1
@@ -25,11 +25,11 @@ services:
     ports:
       - "5081:3001"
       - "5083:3003"
-    #deploy:
-    #  replicas: 1
-    #  placement:
-    #    constraints:
-    #      - node.labels.role == loadbalancer
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.role == loadbalancer
 
   balanceadors2:
     image: proyectofinal-balanceadors2
@@ -40,11 +40,11 @@ services:
       - microusuarios
     ports:
       - "5082:3002"
-    #deploy:
-    #  replicas: 1
-    #  placement:
-    #    constraints:
-    #      - node.labels.role == loadbalancer
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.role == loadbalancer
 
   portal:
     image: proyectofinal-portal
@@ -56,11 +56,11 @@ services:
     links:
       - balanceadors1
       - balanceadors2
-    #deploy:
-    #  replicas: 1
-    #  placement:
-    #    constraints:
-    #      - node.labels.role == serverportal
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.role == serverportal
   
   microclientes:
     image: proyectofinal-microclientes
@@ -71,11 +71,11 @@ services:
       - "3001:3001"
     links:
       - peticionesdb
-    #deploy:
-    #  replicas: 1
-    #  placement:
-    #    constraints:
-    #      - node.labels.role == serverservices
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.role == serverservices
 
   micropeticiones:
     image: proyectofinal-micropeticiones
@@ -87,11 +87,11 @@ services:
       - balanceadors2
     ports:
       - "3003:3003"
-    #deploy:
-    #  replicas: 1
-    #  placement:
-    #    constraints:
-    #      - node.labels.role == serverservices
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.role == serverservices
 
   microusuarios:
     image: proyectofinal-microusuarios
@@ -102,14 +102,13 @@ services:
       - peticionesdb
     ports:
       - "3002:3002"
-    #deploy:
-    #  replicas: 1
-    #  placement:
-    #    constraints:
-    #      - node.labels.role == serverservices
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.role == serverservices
 
   peticionesdb:
-    #image: mysql:latest
     image: proyectofinal-peticionesdb
     build: 
       context: ./peticionesdb/
@@ -124,10 +123,10 @@ services:
     volumes:
       - peticionesdb:/var/lib/mysql
       - ./peticionesdb/init.sql:/docker-entrypoint-initdb.d/init.sql
-    # deploy:
-    #  placement:
-    #    constraints:
-    #      - node.labels.role == serverstorage
+     deploy:
+      placement:
+        constraints:
+          - node.labels.role == serverstorage
   
   insertadditionaldata:
     image: proyectofinal-insertadditionaldata
