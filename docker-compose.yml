@@ -9,7 +9,6 @@ services:
     ports:
       - "5080:80"
     deploy:
-      replicas: 1
       placement:
         constraints:
           - node.labels.role == loadbalancer
@@ -26,7 +25,6 @@ services:
       - "5081:3001"
       - "5083:3003"
     deploy:
-      replicas: 1
       placement:
         constraints:
           - node.labels.role == loadbalancer
@@ -41,7 +39,6 @@ services:
     ports:
       - "5082:3002"
     deploy:
-      replicas: 1
       placement:
         constraints:
           - node.labels.role == loadbalancer
@@ -57,7 +54,6 @@ services:
       - balanceadors1
       - balanceadors2
     deploy:
-      replicas: 1
       placement:
         constraints:
           - node.labels.role == serverportal
@@ -72,7 +68,6 @@ services:
     links:
       - peticionesdb
     deploy:
-      replicas: 1
       placement:
         constraints:
           - node.labels.role == serverservices
@@ -88,7 +83,6 @@ services:
     ports:
       - "3003:3003"
     deploy:
-      replicas: 1
       placement:
         constraints:
           - node.labels.role == serverservices
@@ -103,7 +97,6 @@ services:
     ports:
       - "3002:3002"
     deploy:
-      replicas: 1
       placement:
         constraints:
           - node.labels.role == serverservices
@@ -114,16 +107,13 @@ services:
       context: ./peticionesdb/
       dockerfile: Dockerfilemysql
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: "user"
-      MYSQL_PASSWORD: "root"
     ports:
       - "32000:3306"
     volumes:
       - peticionesdb:/var/lib/mysql
       - ./peticionesdb/init.sql:/docker-entrypoint-initdb.d/init.sql
-     deploy:
+    deploy:
       placement:
         constraints:
           - node.labels.role == serverstorage
