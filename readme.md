@@ -1,15 +1,30 @@
-# Sistema Valida tu ID
+# Sistema *Valida tu ID*
 
 ## Descripción del Sistema
 
 El sistema sirve para asd askdjasl djkalsdjlaskdlasd
 
 ##### Roles de los Usuarios
-Campo | Descripción
+Rol | Descripción
 ------------ | ------------
 Administrador | ????
 Validador | ???????
 Cliente |  ????
+
+##### Tipos de Solicitud
+Solicitud | Descripción
+------------ | ------------
+?? | ????
+?? | ???????
+?? |  ????
+
+##### Estados de la Solicitud
+Estado | Descripción
+------------ | ------------
+?? | ????
+?? | ???????
+?? |  ????
+
 
 ## Arquitectura
 
@@ -70,30 +85,30 @@ password | Contraseña del usuario
 ##### Tabla Clientes
 Campo | Descripción
 ------------ | ------------
-cc | 
-password | 
+cc | ???
+password | ????
 
 ##### Tabla Peticiones
 Campo | Descripción
 ------------ | ------------
-id | ????
-cccliente | ????
-ccarchivo | ????
-tiposervicio | ????
-bancocliente | ????
-fechasolicitud | ????
-horasolicitud | ????
-usuariovalidador | ????
-nombrevalidador | ????
-estado | ????
-fechacreacion | ????
+id | Id del registro de la petición
+cccliente | identificacion del cliente que registró la petición
+ccarchivo | ruta del archivo cargado para validar.
+tiposervicio | Tipo de Servicio para que cual se realiza la petición
+bancocliente | Banco para el que va la solicitud
+fechasolicitud | Fecha del registro de la solicitud
+horasolicitud | hora en la que se registro la solicitud
+usuariovalidador | Usuario que valido la solicitud
+nombrevalidador | Nombre del usuario que valido la solicitud
+estado | Estado de la solicitud
+fechacreacion | Fecha
 horacreacion | ????
 fecharevision | ????
 horarevision | ????
 
 ### Servicio de carga de información
 
-El servicio insertadditionaldata, se utiliza para cargar la información inicial que se encuentra en el archivo .cvs. Se extrae los clientes y los usuarios y los crea en la base de datos de Peticiones en MySQL mediante codigo Python.
+El servicio **insertadditionaldata**, se utiliza para cargar la información inicial que se encuentra en el archivo .cvs. Se extrae los clientes y los usuarios y los crea en la base de datos de Peticiones en MySQL mediante codigo Python.
 
 > *Una vez ejecutado este servicio, se detendrá el contenedor.*
 
@@ -147,6 +162,7 @@ Instale Docker tanto en el servidorUbuntu como en el clienteUbuntu
 Ingrese al servidorUbuntu y descargue el repositorio git
 
 ```sh
+# Descargue el repositorio de git
 git clone https://github.com/jacoboDM/ValidaTuID
 
 # Ingrese a la carpeta
@@ -155,7 +171,7 @@ cd ValidaTuID
 # Construya las imágenes Docker
 docker compose build
 
-# Verifique que las imágenes fueron construidas. Recuerde que inician por proyectofinal-
+# Verifique que las imágenes fueron construidas. Recuerde que inician por "proyectofinal-"
 docker images -a
 ```
 
@@ -217,10 +233,21 @@ docker exec -it 168d22990ac1 /bin/bash
 
 # Ingrese a la base de datos y realice una consulta para verificar que se insertaron los registros
 
+# Ingrese a mysql con el pwd root
 mysql -u root -p
 use peticiones;
 select * from usuarios;
 select * from clientes;
+```
+
+Compruebe en que maquina se desplegaron los servicios
+
+```sh
+# Para el Portal
+docker service ps proyectofinal_portal
+
+# Para el servicio de usuarios
+docker service ps proyectofinal_microusuarios
 
 ```
 
@@ -228,14 +255,11 @@ select * from clientes;
 
 El archivo de Jmeter **Pruebas de Carga.jmx** tiene un ejemplo configurado con la consulta de todos los usuarios de la base de datos. Dependiendo de las capacidades de su maquina, escale el servicio para lograr que este responda correctamente.
 
-Ejecute los siguientes comandos en el servidorUbuntu
+Ejecute el siguiente comando en el servidorUbuntu para escalar el servicio y lograr que no se obtengan fallos al realizar la prueba de carga.
 
 ```sh
 # Escale un servicio
 docker service scale proyectofinal_microusuarios=2 
-
-# Eliminar el stack
-docker stack rm proyectofinal 
 ```
 
 ### Estadísticas de los balanceadores
@@ -246,3 +270,11 @@ Servicio | Url |  Descripción
 Balanceadorw | http://192.168.100.2:5080/haproxy?stats | Estadisticas del Balanceador del Portal
 Balanceadors1 | http://192.168.100.2:5081/haproxy?stats | Estadísticas del Balanceador de los servicios de peticiones y clientes
 Balanceadors2 | http://192.168.100.2:5082/haproxy?stats | Estadísticas del Balanceador del servicio de usuarios
+
+
+### Elimine el Stack
+
+```sh
+# Escale un servicio
+docker stack rm proyectofinal 
+```
