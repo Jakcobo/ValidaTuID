@@ -1,5 +1,7 @@
 # Sistema *Valida tu ID*
 
+Comprobar en Ejecucion/docker-compose.yml el links ya que al ejecutar el swarm arroja un mensaje que dice que no se soporta, creo que deben cambarlo a depends_on
+
 ## Descripción del Sistema
 
 El sistema sirve para asd askdjasl djkalsdjlaskdlasd
@@ -214,7 +216,7 @@ sudo docker push Usuario1/proyectofinal-peticionesdb
 
 ### Edite el archivo Ejecucion/docker-compose.yml
 
-Edite este archivo para cambiar el usuario. Abra el archivo y cambie la ruta de cada una de las imanges para direccionarla a las imagenes del reositorio en docker hub
+Edite este archivo para cambiar el usuario. Abra el archivo y cambie la ruta de cada una de las imagenes para direccionarla a las imagenes del repositorio en docker hub
 
 ```sh
 # Devuelvase un nivel en el directorio
@@ -268,6 +270,7 @@ docker service ls
 
 # Consultar los contenedores en el servicio especificado
 docker service ps proyectofinal_microusuarios
+docker service ps proyectofinal_portal
 ```
 
 Consulte el id del contenedor de la base de datos ingrese a ella y realice una consulta;

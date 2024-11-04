@@ -92,6 +92,7 @@ services:
       - "32000:3306"
     volumes:
       - peticionesdb:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     deploy:
       placement:
         constraints:
@@ -99,9 +100,6 @@ services:
   
   insertadditionaldata:
     image: Usuario1/proyectofinal-insertadditionaldata
-    build: 
-      context: ./peticionesdb/
-      dockerfile: Dockerfile
     links:
       - peticionesdb
 
