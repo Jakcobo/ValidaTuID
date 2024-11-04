@@ -1,0 +1,109 @@
+networks: 
+  stack_balanceo_default:
+    driver: overlay
+
+services:
+  balanceadorw:
+    image: Usuario1/proyectofinal-balanceadorw
+    links:
+      - portal
+    ports:
+      - "5080:80"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == cliente
+
+  balanceadors1:
+    image: Usuario1/proyectofinal-balanceadors1
+    links:
+      - microclientes
+      - micropeticiones
+    ports:
+      - "5081:3001"
+      - "5083:3003"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == cliente
+
+  balanceadors2:
+    image: Usuario1/proyectofinal-balanceadors2
+    links:
+      - microusuarios
+    ports:
+      - "5082:3002"
+    deploy:
+      placement:
+       constraints:
+          - node.labels.role == cliente
+
+  portal:
+    image: Usuario1/proyectofinal-portal
+    ports:
+      - "3000:80"
+    links:
+      - balanceadors1
+      - balanceadors2
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == cliente
+  
+  microclientes:
+    image: Usuario1/proyectofinal-microclientes
+    ports:
+      - "3001:3001"
+    links:
+      - peticionesdb
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == servidor
+
+  micropeticiones:
+    image: Usuario1/proyectofinal-micropeticiones
+    links:
+      - peticionesdb
+      - balanceadors2
+    ports:
+      - "3003:3003"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == servidor
+
+  microusuarios:
+    image: Usuario1/proyectofinal-microusuarios
+    links:
+      - peticionesdb
+    ports:
+      - "3002:3002"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == servidor
+
+  peticionesdb:
+    image: Usuario1/proyectofinal-peticionesdb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "32000:3306"
+    volumes:
+      - peticionesdb:/var/lib/mysql
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == servidor
+  
+  insertadditionaldata:
+    image: Usuario1/proyectofinal-insertadditionaldata
+    build: 
+      context: ./peticionesdb/
+      dockerfile: Dockerfile
+    links:
+      - peticionesdb
+
+volumes:
+  peticionesdb:

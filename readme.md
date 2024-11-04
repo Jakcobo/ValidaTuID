@@ -146,8 +146,8 @@ Vagrant.configure("2") do |config|
    clienteUbuntu.vm.hostname = "clienteUbuntu"
    clienteUbuntu.vm.box_download_insecure=true
    clienteUbuntu.vm.provider "virtualbox" do |vb|
-      vb.memory = "1024"
-      vb.cpus = 1
+      vb.memory = "2048"
+      vb.cpus = 2
    end
  end
 end
@@ -166,7 +166,7 @@ Ingrese al servidorUbuntu y descargue el repositorio git
 git clone https://github.com/jacoboDM/ValidaTuID
 
 # Ingrese a la carpeta
-cd ValidaTuID
+cd ValidaTuID/CreacionImagenes
 
 # Construya las imágenes Docker
 docker compose build
@@ -175,7 +175,57 @@ docker compose build
 docker images -a
 ```
 
-### Cofiguración de roles de despliegue
+### Publique las imagenes en docker hub
+
+> *Este ejemplo asume que el usuario en Docker hub es **Usuario1**.*
+
+```sh
+# Autentiquese en Docker hub
+sudo docker login -u Usuario1
+
+# Suba las imagenes a Docker hug
+docker tag proyectofinal-balanceadorw Usuario1/proyectofinal-balanceadorw
+sudo docker push Usuario1/proyectofinal-balanceadorw
+
+docker tag proyectofinal-portal Usuario1/proyectofinal-portal
+sudo docker push Usuario1/proyectofinal-portal
+
+docker tag proyectofinal-balanceadors1 Usuario1/proyectofinal-balanceadors1
+sudo docker push Usuario1/proyectofinal-balanceadors1
+
+docker tag proyectofinal-insertadditionaldata Usuario1/proyectofinal-insertadditionaldata
+sudo docker push Usuario1/proyectofinal-insertadditionaldata
+
+docker tag proyectofinal-micropeticiones Usuario1/proyectofinal-micropeticiones
+sudo docker push Usuario1/proyectofinal-micropeticiones
+
+docker tag proyectofinal-balanceadors2 Usuario1/proyectofinal-balanceadors2
+sudo docker push Usuario1/proyectofinal-balanceadors2
+
+docker tag proyectofinal-microclientes Usuario1/proyectofinal-microclientes
+sudo docker push Usuario1/proyectofinal-microclientes
+
+docker tag proyectofinal-microusuarios Usuario1/proyectofinal-microusuarios
+sudo docker push Usuario1/proyectofinal-microusuarios
+
+docker tag proyectofinal-peticionesdb Usuario1/proyectofinal-peticionesdb
+sudo docker push Usuario1/proyectofinal-peticionesdb
+```
+
+### Edite el archivo Ejecucion/docker-compose.yml
+
+Edite este archivo para cambiar el usuario. Abra el archivo y cambie la ruta de cada una de las imanges para direccionarla a las imagenes del reositorio en docker hub
+
+```sh
+# Devuelvase un nivel en el directorio
+cd ..
+
+# Ingrese a la carpeta de ejecución
+cd Ejecucion
+vim docker-compose.yml
+```
+
+### Configuración de roles de despliegue
 
 El archivo de Docker compose tiene la configuración para desplegar los contenedores en determinados roles.
 
@@ -213,7 +263,7 @@ docker stack deploy -c docker-compose.yml proyectofinal
 # Consultar los stack creado
 docker stack ls 
 
-# Consultar los servicios en los stacks
+# Monitoree que todos los servicios suban
 docker service ls 
 
 # Consultar los contenedores en el servicio especificado
@@ -276,3 +326,6 @@ Balanceadors2 | http://192.168.100.2:5082/haproxy?stats | Estadísticas del Bala
 # Escale un servicio
 docker stack rm proyectofinal 
 ```
+
+
+
