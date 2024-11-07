@@ -293,34 +293,40 @@ if (isset($_GET['error'])) {
 </head>
 <body>
     <!-- Barra de navegación -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Panel de Administrador</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAdmin" aria-controls="navbarAdmin" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarAdmin">
-                <ul class="navbar-nav ms-auto">
-                    <!-- Botón de Mostrar Peticiones -->
-                    <li class="nav-item me-2">
-                        <button onclick="mostrarPeticiones()" class="btn btn-outline-light">
-                            <i class="fas fa-tasks mr-2"></i> Mostrar Peticiones
-                        </button>
-                    </li>
-                    <!-- Botón de alternancia de tema -->
-                    <li class="nav-item">
-                        <button id="toggleTema" class="btn btn-outline-light me-2 theme-toggle-btn">
-                            <i class="fas fa-moon"></i> Oscuro
-                        </button>
-                    </li>
-                    <!-- Botón de Cerrar Sesión -->
-                    <li class="nav-item">
-                        <a href="logout.php" class="btn btn-outline-light"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a>
-                    </li>
-                </ul>
-            </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Panel de Administrador</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAdmin" aria-controls="navbarAdmin" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarAdmin">
+            <ul class="navbar-nav ms-auto">
+                <!-- Botón de Mostrar Peticiones -->
+                <li class="nav-item me-2">
+                    <button onclick="mostrarPeticiones()" class="btn btn-outline-light">
+                        <i class="fas fa-tasks me-2"></i> Mostrar Peticiones
+                    </button>
+                </li>
+                <!-- Nuevo enlace al Dashboard -->
+                <li class="nav-item me-2">
+                    <a href="dashboard.php" class="btn btn-outline-light">
+                        <i class="fas fa-chart-line me-2"></i> Dashboard
+                    </a>
+                </li>
+                <!-- Botón de alternancia de tema -->
+                <li class="nav-item">
+                    <button id="toggleTema" class="btn btn-outline-light me-2 theme-toggle-btn">
+                        <i class="fas fa-moon"></i> Oscuro
+                    </button>
+                </li>
+                <!-- Botón de Cerrar Sesión -->
+                <li class="nav-item">
+                    <a href="logout.php" class="btn btn-outline-light"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a>
+                </li>
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>
 
     <!-- Contenido principal -->
     <div class="container mt-5 pt-4">
