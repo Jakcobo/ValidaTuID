@@ -58,13 +58,6 @@ clienteUbuntu | 1024 | 1 | 192.168.100.3
 
 Los dos servidores conforman un cluster de Docker. 
 
-### Comunicacion entre Servicios
-A continuación se gráfica la comunicación entre los servicios configurados en el docker compose.
-
-![Alt text](/Doc/DiagramaComunicacion.png "Diagrama de Comunicación")
-
-El gráfico muestra que cada servicio es accedido mediante un balanceador de carga. 
-
 ### Diagrama Entidad Relación
 A continuación se muestra las tablas que componen el sistema.
 
