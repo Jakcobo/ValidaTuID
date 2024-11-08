@@ -1,10 +1,10 @@
 # Sistema *Valida tu ID*
 
-Comprobar en Ejecucion/docker-compose.yml el links ya que al ejecutar el swarm arroja un mensaje que dice que no se soporta, creo que deben cambarlo a depends_on
-
 ## Descripción del Sistema
 
-El sistema sirve para asd askdjasl djkalsdjlaskdlasd
+El sistema surge de la necesidad de que los clientes tengan una forma de validar y confirmar la identidad de sus clientes que realizan alguna solicitud en sus bancos, con el fin de que la entidad tenga seguridad en la plena identidad de las personas. 
+
+De forma general el ciente registra una solictud en la que adjunta la imagen de su documento, seleccionando el tipo de solicitud (credito, CDT o cuenta de ahorros), una vez finaliza el registro de la solicitud el estado de esta sera pendiente, posterior a esto el validador recibe la solicitud y una vez revisa la imagen adjunta, realiza el cambio de estado que puede ser aprobado o rechazado, y se cuenta con un usuario administrador que puede ver el estado de todas las solicitudes creadas y asi mismo puede crear usuarios administradores y validadores.
 
 ##### Roles del sistema
 Rol | Descripción
