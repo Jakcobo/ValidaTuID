@@ -30,14 +30,14 @@ Pendiente |  Estado predeterminado al crear una solicitud
 
 ## Arquitectura
 
-### Capas del sistema
+### Diagrama lógico y Capas del sistema
 En un diagrama de capas, nuestro sistema se ve de la siguiente forma.
 
-![Alt text](/Doc/DiagramaCapas.png "Diagrama de Capas")
+![Alt text](/Doc/DiagramaLogico.png "Diagrama de Capas")
 
 ### Diagrama de Despliegue
 
-![Alt text](/Doc/DiagramaDespliegue.png "Diagrama de Despliegue")
+![Alt text](/Doc/DiagramaDespliegue2.png "Diagrama de Despliegue")
 
 #### Lista de Servicios Desplegados
 
