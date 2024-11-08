@@ -11,65 +11,6 @@ if (!isset($_SESSION["usuario"]) || $_SESSION["rol"] !== 'admin') {
 
 $usuario = htmlspecialchars($_SESSION["usuario"]);
 
-// Definir filtros permitidos
-$allowed_filters = ['cliente', 'estado', 'fechaInicio', 'fechaFin', 'tiposervicio'];
-$filtros = [];
-
-// Recoger y sanitizar los filtros de la URL
-foreach ($allowed_filters as $filter) {
-    if (isset($_GET[$filter]) && !empty(trim($_GET[$filter]))) {
-        $filtros[$filter] = htmlspecialchars(trim($_GET[$filter]));
-    }
-}
-
-// Determinar la URL del microservicio según si hay filtros o no
-if (!empty($filtros)) {
-    // Usar la ruta de peticiones filtradas
-    $query = http_build_query($filtros);
-    $servurlPeticiones = "http://balanceadors1:3003/peticiones_filtradas?" . $query;
-    $esperaRespuesta = 'array'; // Esperar un arreglo
-} else {
-    // Usar la ruta de todas las peticiones
-    $servurlPeticiones = "http://balanceadors1:3003/peticiones/";
-    $esperaRespuesta = 'object'; // Esperar un objeto con status y data
-}
-
-// Obtener las peticiones desde el microservicio
-$curlPeticiones = curl_init($servurlPeticiones);
-curl_setopt($curlPeticiones, CURLOPT_RETURNTRANSFER, true);
-$responsePeticiones = curl_exec($curlPeticiones);
-$httpCodePeticiones = curl_getinfo($curlPeticiones, CURLINFO_HTTP_CODE);
-curl_close($curlPeticiones);
-
-if ($httpCodePeticiones === 200) {
-    $decodedPeticiones = json_decode($responsePeticiones, true);
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        $peticiones = [];
-        $errorPeticiones = "Respuesta de API no válida.";
-    } else {
-        if ($esperaRespuesta === 'array') {
-            // Ruta /peticiones_filtradas devuelve un arreglo
-            if (is_array($decodedPeticiones)) {
-                $peticiones = $decodedPeticiones;
-            } else {
-                $peticiones = [];
-                $errorPeticiones = "Respuesta de API no válida.";
-            }
-        } else {
-            // Ruta /peticiones devuelve un objeto con status y data
-            if (isset($decodedPeticiones['status']) && $decodedPeticiones['status'] === 'success' && isset($decodedPeticiones['data'])) {
-                $peticiones = $decodedPeticiones['data'];
-            } else {
-                $peticiones = [];
-                $errorPeticiones = "Respuesta de API no válida.";
-            }
-        }
-    }
-} else {
-    $peticiones = [];
-    $errorPeticiones = "Error al obtener las peticiones. Código de respuesta: $httpCodePeticiones";
-}
-
 // Obtener todos los usuarios desde el microservicio
 $servurlUsuarios = "http://balanceadors2:3002/usuarios";
 $curlUsuarios = curl_init($servurlUsuarios);
@@ -117,9 +58,6 @@ if (isset($_GET['error'])) {
             break;
         case 'error_eliminar_usuario':
             $error = "Error al eliminar el usuario. Inténtalo nuevamente.";
-            break;
-        case 'error_peticiones':
-            $error = isset($errorPeticiones) ? $errorPeticiones : "Error al obtener las peticiones.";
             break;
         case 'error_usuarios':
             $error = isset($errorUsuarios) ? $errorUsuarios : "Error al obtener los usuarios.";
@@ -278,11 +216,9 @@ if (isset($_GET['error'])) {
             background-color: #f1f1f1;
         }
 
-        /* Botones de acciones eliminados */
-
-        /* Sección de peticiones */
-        .peticiones-section {
-            margin-top: 50px;
+        /* Botones de acciones */
+        .btn-warning, .btn-danger {
+            color: #fff;
         }
 
         /* Tema Oscuro/Claro Toggle */
@@ -293,40 +229,40 @@ if (isset($_GET['error'])) {
 </head>
 <body>
     <!-- Barra de navegación -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Panel de Administrador</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAdmin" aria-controls="navbarAdmin" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarAdmin">
-            <ul class="navbar-nav ms-auto">
-                <!-- Botón de Mostrar Peticiones -->
-                <li class="nav-item me-2">
-                    <button onclick="mostrarPeticiones()" class="btn btn-outline-light">
-                        <i class="fas fa-tasks me-2"></i> Mostrar Peticiones
-                    </button>
-                </li>
-                <!-- Nuevo enlace al Dashboard -->
-                <li class="nav-item me-2">
-                    <a href="dashboard.php" class="btn btn-outline-light">
-                        <i class="fas fa-chart-line me-2"></i> Dashboard
-                    </a>
-                </li>
-                <!-- Botón de alternancia de tema -->
-                <li class="nav-item">
-                    <button id="toggleTema" class="btn btn-outline-light me-2 theme-toggle-btn">
-                        <i class="fas fa-moon"></i> Oscuro
-                    </button>
-                </li>
-                <!-- Botón de Cerrar Sesión -->
-                <li class="nav-item">
-                    <a href="logout.php" class="btn btn-outline-light"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a>
-                </li>
-            </ul>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Panel de Administrador</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAdmin" aria-controls="navbarAdmin" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarAdmin">
+                <ul class="navbar-nav ms-auto">
+                    <!-- Enlace a Ver Todas las Peticiones -->
+                    <li class="nav-item me-2">
+                        <a href="verTodasPeticiones.php" class="btn btn-outline-light">
+                            <i class="fas fa-tasks me-2"></i> Ver Peticiones
+                        </a>
+                    </li>
+                    <!-- Nuevo enlace al Dashboard -->
+                    <li class="nav-item me-2">
+                        <a href="dashboard.php" class="btn btn-outline-light">
+                            <i class="fas fa-chart-line me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <!-- Botón de alternancia de tema -->
+                    <li class="nav-item">
+                        <button id="toggleTema" class="btn btn-outline-light me-2 theme-toggle-btn">
+                            <i class="fas fa-moon"></i> Oscuro
+                        </button>
+                    </li>
+                    <!-- Botón de Cerrar Sesión -->
+                    <li class="nav-item">
+                        <a href="logout.php" class="btn btn-outline-light"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
     <!-- Contenido principal -->
     <div class="container mt-5 pt-4">
@@ -344,7 +280,6 @@ if (isset($_GET['error'])) {
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>
         <?php endif; ?>
-
 
         <!-- Formulario para crear un nuevo usuario -->
         <div class="mb-4" data-aos="fade-up" data-aos-delay="100">
@@ -407,121 +342,7 @@ if (isset($_GET['error'])) {
                 <?php endif; ?>
             </tbody>
         </table>
-
-        <!-- Formulario de Filtrado Avanzado -->
-<form id="filterForm" method="GET" action="admin.php" class="mb-4" data-aos="fade-up" data-aos-delay="100">
-    <div class="row g-3">
-        <div class="col-md-3">
-            <input type="text" name="cliente" class="form-control" placeholder="Cédula del Cliente" value="<?php echo isset($_GET['cliente']) ? htmlspecialchars($_GET['cliente']) : ''; ?>">
-        </div>
-        <div class="col-md-3">
-            <select name="estado" class="form-select">
-                <option value="">-- Estado --</option>
-                <option value="pendiente" <?php if(isset($_GET['estado']) && $_GET['estado'] == 'pendiente') echo 'selected'; ?>>Pendiente</option>
-                <option value="Aprobado" <?php if(isset($_GET['estado']) && $_GET['estado'] == 'Aprobado') echo 'selected'; ?>>Aprobado</option>
-                <option value="rechazado" <?php if(isset($_GET['estado']) && $_GET['estado'] == 'rechazado') echo 'selected'; ?>>Rechazado</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <input type="date" name="fechaInicio" class="form-control" placeholder="Fecha Inicio" value="<?php echo isset($_GET['fechaInicio']) ? htmlspecialchars($_GET['fechaInicio']) : ''; ?>">
-        </div>
-        <div class="col-md-3">
-            <input type="date" name="fechaFin" class="form-control" placeholder="Fecha Fin" value="<?php echo isset($_GET['fechaFin']) ? htmlspecialchars($_GET['fechaFin']) : ''; ?>">
-        </div>
-        <div class="col-md-3">
-            <select name="tiposervicio" class="form-select">
-                <option value="">-- Tipo de Servicio --</option>
-                <option value="CDT" <?php if(isset($_GET['tiposervicio']) && $_GET['tiposervicio'] == 'CDT') echo 'selected'; ?>>CDT</option>
-                <option value="Cuenta Ahorros" <?php if(isset($_GET['tiposervicio']) && $_GET['tiposervicio'] == 'Cuenta Ahorros') echo 'selected'; ?>>Cuenta Ahorros</option>
-                <option value="Credito" <?php if(isset($_GET['tiposervicio']) && $_GET['tiposervicio'] == 'Credito') echo 'selected'; ?>>Crédito</option>
-                <!-- Añade más opciones según sea necesario -->
-            </select>
-        </div>
-        <div class="col-md-3 d-grid">
-            <button type="submit" class="btn btn-primary"><i class="fas fa-filter me-2"></i> Filtrar</button>
-            <a href="admin.php" class="btn btn-secondary mt-2"><i class="fas fa-eraser me-2"></i> Limpiar</a>
-        </div>
     </div>
-</form>
-
-<!-- Lista de peticiones -->
-<div id="seccionPeticiones" class="container mt-5" style="display: none;">
-    <h3 class="text-warning mb-4"><i class="fas fa-tasks me-2"></i> Todas las Peticiones</h3>
-    <?php if (isset($errorPeticiones)): ?>
-        <div class="alert alert-danger-custom alert-dismissible fade show" role="alert">
-            <?php echo htmlspecialchars($errorPeticiones); ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-        </div>  
-    <?php endif; ?>
-
-    <div id="peticionesTable">
-        <?php if (!empty($peticiones)): ?>
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>ID de Solicitud</th>
-                            <th>Cédula del Cliente</th>
-                            <th>Validador</th>
-                            <th>Tipo de Solicitud</th>
-                            <th>Estado</th>
-                            <th>Fecha de Solicitud</th>
-                            <th>Hora de Solicitud</th>
-                            <th>Archivo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($peticiones as $peticion): ?>
-                            <?php
-                                // Verificar que $peticion es un array con las claves necesarias
-                                if (is_array($peticion) && isset($peticion['id'], $peticion['cccliente'], $peticion['usuariovalidador'], $peticion['tiposervicio'], $peticion['estado'], $peticion['fechasolicitud'], $peticion['horasolicitud'], $peticion['ccarchivo'])):
-                            ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($peticion['id']); ?></td>
-                                    <td><?php echo htmlspecialchars($peticion['cccliente']); ?></td>
-                                    <td><?php echo htmlspecialchars($peticion['usuariovalidador'] ?? 'N/A'); ?></td>
-                                    <td><?php echo htmlspecialchars($peticion['tiposervicio']); ?></td>
-                                    <td>
-                                        <?php 
-                                            $estado = ucfirst($peticion['estado']); 
-                                            if ($estado === 'Aprobado') {
-                                                echo '<span class="badge bg-success">' . $estado . '</span>';
-                                            } elseif ($estado === 'Rechazado') {
-                                                echo '<span class="badge bg-danger">' . $estado . '</span>';
-                                            } else {
-                                                echo '<span class="badge bg-warning text-dark">' . $estado . '</span>';
-                                            }
-                                        ?>
-                                    </td>
-                                    <td><?php echo htmlspecialchars($peticion['fechasolicitud']); ?></td>
-                                    <td><?php echo htmlspecialchars($peticion['horasolicitud']); ?></td>
-                                    <td>
-                                        <?php if (!empty($peticion['ccarchivo'])): ?>
-                                            <a href="uploads/ccarchivos/<?php echo htmlspecialchars($peticion['ccarchivo']); ?>" 
-                                               target="_blank" class="text-primary">
-                                                <i class="fas fa-eye me-2"></i>Ver Archivo
-                                            </a>
-                                        <?php else: ?>
-                                            No hay archivo.
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="8">Datos de petición inválidos.</td>
-                                </tr>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php else: ?>
-            <div class="alert alert-info">No hay peticiones para mostrar.</div>
-        <?php endif; ?>
-    </div>
-</div>
-
-    <!-- Fin del Contenido Principal -->
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -558,21 +379,6 @@ if (isset($_GET['error'])) {
             }
             localStorage.setItem('tema', temaActual);
         });
-    </script>
-    <script>
-        // Función para mostrar/ocultar la sección de Todas las Peticiones
-        function mostrarPeticiones() {
-            const seccionPeticiones = document.getElementById('seccionPeticiones');
-            if (seccionPeticiones.style.display === 'none') {
-                seccionPeticiones.style.display = 'block';
-                window.scrollTo({
-                    top: seccionPeticiones.offsetTop,
-                    behavior: 'smooth'
-                });
-            } else {
-                seccionPeticiones.style.display = 'none';
-            }
-        }
     </script>
 </body>
 </html>

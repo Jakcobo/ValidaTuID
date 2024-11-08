@@ -57,6 +57,8 @@ services:
     links:
       - balanceadors1
       - balanceadors2
+    volumes:
+      - uploads_data:/var/www/html/uploads  # Montar el volumen de uploads en el contenedor
     deploy:
       placement:
         constraints:
@@ -132,3 +134,4 @@ services:
 
 volumes:
   peticionesdb:
+  uploads_data:

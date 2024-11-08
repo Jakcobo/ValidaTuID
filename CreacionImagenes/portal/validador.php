@@ -49,12 +49,13 @@ $peticiones = [];
 $mensaje = '';
 $error = '';
 
+// Verificar la respuesta del microservicio
 if ($httpCodePeticiones === 200) {
     $peticiones = json_decode($responsePeticiones);
-    
+
     // Verificar si la decodificación fue exitosa
     if (json_last_error() !== JSON_ERROR_NONE) {
-        $error = "Error al decodificar la respuesta del servidor.";
+        $error = "Error al decodificar la respuesta del servidor: " . json_last_error_msg();
         $peticiones = [];
     }
 } else {
@@ -63,7 +64,7 @@ if ($httpCodePeticiones === 200) {
     if (isset($errorData['message'])) {
         $error = htmlspecialchars($errorData['message']);
     } else {
-        $error = "Error al obtener peticiones pendientes.";
+        $error = "Error al obtener peticiones pendientes. Código de respuesta: $httpCodePeticiones";
     }
 }
 
@@ -320,6 +321,8 @@ if (isset($_GET['error'])) {
                         <th>Banco del Cliente</th>
                         <th>Fecha de Solicitud</th>
                         <th>Hora de Solicitud</th>
+                        <th>Archivo</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -358,13 +361,13 @@ if (isset($_GET['error'])) {
                                 </tr>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="7">Datos de petición inválidos.</td>
+                                    <td colspan="8">Datos de petición inválidos.</td>
                                 </tr>
                             <?php endif; ?>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="7">No hay peticiones pendientes.</td>
+                            <td colspan="8">No hay peticiones pendientes.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
